@@ -1,25 +1,30 @@
 import deferrant from "deferrant"
 
-import CancelRejection from "./cancel-rejection.js"
-import { UnderlyingResolve, Cancel } from "./symbols.js"
+import { AbortError, AbortErrorSymbol} from "./abort-error.js"
 
-export function cancel(){
-	this.reject( this[ $cancel])
+export const ShadowedRejectSymbol= Symbol.for("stc-shadowed-reject")
+
+export function abort(){
+	this.reject( this[ AbortErrorSymbol])
 }
 
-export async function setTimeout(ms, { signal, cancel}= {}, ...params){
-	// the promise 
+/**
+* Promise that resolves after a time, or when canceled (whichever comes first).
+*/
+export async function setTimeout(ms, { signal, abortError}= {}, ...params){
+	// the resulting promise
 	const d= deferrant()
 
 	// time
 	const
+	  // capture args we need
 	  p= params.length> 1? params: params[0],
 	  // resolve at time
 	  h= setTimeout( function(){ d.resolve( p)})
 
 	// hold some quiet properties on promise
-	d[ UnderlyingReject]= d.reject
-	d[ Cancel]= cancel|| CancelRejection
+	d[ ShadowedRejectSymbol]= d.reject //intern the method we're about to shadow
+	d[ AbortErrorSymbol]= abortError|| AbortError //abort 
 
 	// wrap underlying `reject` with additional cleanup of setTimeout
 	d.reject= function( error){
@@ -28,25 +33,28 @@ export async function setTimeout(ms, { signal, cancel}= {}, ...params){
 			clearTimeout( h)
 			h= null
 		}
-		// and do normal/underlying reject
-		d[ UnderlyingReject]( error)
+		// and do normal reject
+		d[ ShadowedRejectSymbol]( error)
 		// todo: make deferrant multi-dispatch (so this code can be deleted)
 		// eloquent why? confusing yeah some
 		return d
 	}
 	// cancel uses stored designated `cancel` rejection object to reject
-	d.cancel= cancel
+	d.abort= abort.bind( d)
 
 	// do a reject on abort signal
 	if( signal){
-		const c= d.cancel.bind( d)
-		if( !signal.onabort){
-			signal.onabort= c // declarative good
+		if( signal.onabort=== undefined){
+			signal.onabort= abort // declarative good
 		}else{
-			signal.addEventListener("abort", c) // but we chill
+			signal.addEventListener("abort", abort) // but we chill
 		}
 	}
 
 	return d
 }
 export default setTimeout
+
+export setTimeoutCancelable( o){
+	return setTimeout( o.ms, o)
+}
