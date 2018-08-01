@@ -1,0 +1,35 @@
+{
+	"name": "set-time-can",
+	"version": "1.0.0",
+	"description": "You've tried setTimeout+promises before but have you tried setTimeout+promises on abortsignal? & setInterval too.",
+	"main": "set-time-can.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://archive.voodoowarez.com/set-time-can"
+	},
+	"keywords": [
+		"cancellable",
+		"cancelable",
+		"abort",
+		"abortcontroller",
+		"abortsignal",
+		"setTimeout",
+		"setInterface",
+		"async",
+		"generator",
+		"time",
+		"sleep",
+		"promises",
+		"promisify",
+		"stdlib"
+	],
+	"author": "rektide de la faye",
+	"license": "MIT",
+	"module": "set-time-can.js",
+	"peerDependencies": {
+		"abortcontroller-polyfill": "^1.1.9"
+	}
+}
