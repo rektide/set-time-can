@@ -31,5 +31,8 @@
 	"module": "set-time-can.js",
 	"peerDependencies": {
 		"abortcontroller-polyfill": "^1.1.9"
+	},
+	"dependencies": {
+		"deferrant": "^1.2.2"
 	}
 }

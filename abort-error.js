@@ -5,7 +5,7 @@ const ae= (function( aeExternal){
 	if( aeExternal){
 		return aeExternal
 	}
-	return class AbortError{
+	return class AbortError extends Error{
 		constructor( msg){
 			super( msg|| "AbortError")
 			this.name= "AbortError"
