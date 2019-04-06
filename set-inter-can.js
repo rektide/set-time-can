@@ -1,3 +1,4 @@
+"use module"
 import deferrant from "deferrant"
 
 import AbortError from "./abort-error.js"
@@ -5,7 +6,13 @@ import AbortError from "./abort-error.js"
 /**
 * Async Generator that runs on an interval & is cancelable.
 */
-export async function * setInterval(ms, { signal, abortError, immediate}= {}, ...params){
+export async function * setInterCan( opts= 1000, ...params){
+	const
+	  signal= opts&& opts.signal,
+	  abortError= opts&& opts.abortError,
+	  immediate= opts&& opts.immediate,
+	  ms= (isNaN( opts)? opts&& opts.ms: opts)|| 1000
+
 	// events write to cursor, while loop reads off cursor (& re
 	let cursor= deferrant()
 
@@ -38,9 +45,13 @@ export async function * setInterval(ms, { signal, abortError, immediate}= {}, ..
 			await cursor
 			yield p
 		}
-	}catch(error){
+	}catch( error){
 		clearInterval( h)
 		throw error
 	}
 }
-export default setInterval
+export {
+  setInterCan as setInterval,
+  setInterCan as setIntervalCancelable
+}
+export default setInterCan

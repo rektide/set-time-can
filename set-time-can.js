@@ -11,7 +11,12 @@ export function abort(){
 /**
 * Promise that resolves after a time, or when canceled (whichever comes first).
 */
-export async function setTimeout(ms, { signal, abortError}= {}, ...params){
+export async function setTimeCan( opts= 1000, ...params){
+	const
+	  signal= opts&& opts.signal,
+	  abortError= opts&& opts.abortError,
+	  ms= (isNaN( opts)? opts&& opts.ms: opts)|| 1000
+
 	// the resulting promise
 	const d= deferrant()
 
@@ -53,8 +58,8 @@ export async function setTimeout(ms, { signal, abortError}= {}, ...params){
 
 	return d
 }
-export default setTimeout
-
-export setTimeoutCancelable( o){
-	return setTimeout( o.ms, o)
+export {
+  setTimeCan as setTimeout,
+  setTimeCan as setTimeoutCancelable
 }
+export default setTimeCan
